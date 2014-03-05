@@ -1,45 +1,57 @@
+from __future__ import unicode_literals
 import unittest
 import sys
 
 import tutil
 import webvulnscan.attacks.session_url
 
-#creating site without any session
+#session id's in URL can appear in various forms
+#this test creates forms of sid, sessionid, phpsessid
+
+
 def make_client(headers):
     headers['Content-Type'] = 'text/html; charset=utf-8'
     return tutil.TestClient({
-        '/':(200, b'<html></html>', headers),
+        '/': (200, b'<html></html>', headers),
     })
-    
+
 
 class SessionUrl(unittest.TestCase):
-    headers = "Set-Cookie" : "random=test"
+    #creating site without any session
     def test_static_site(self):
         client = make_client({})
         client.run_attack(webvulnscan.attacks.session_url)
         client.log.assert_count(0)
 
-    #test site/form with session id in URI POST
+    #sid in link
     def test_site_with_post(self):
         client = tutil.TestClient({
             '/': u'''<html>
-                <form method = POST>
-                    <input type="submit" />
-                </form>
-                </html>''', headers
-        })
-        client.run_attack(webvulnscan.attacks.session_url)
-        client.log.assert_count(1)
-        
-    #test site/form with session id in URI GET
-    def test_site_with_get(self):
-        client = make_client({
-            '/': u'''<html>
-                <form method = GET>
-                    <input type="submit" />
-                </form>
-                </html>''', headers
+                <a href="www.sample.org/index.html?
+                sid=edb0e8665db4e9042fe0176a89aade16">link1</a>
+                </html>'''
         })
         client.run_attack(webvulnscan.attacks.session_url)
         client.log.assert_count(1)
 
+    #sessionid in link
+    def test_site_with_get(self):
+        client = tutil.TestClient({
+            '/': u'''<html>
+                <a href="www.sample.org/index.html?
+                sessionid=edb0e8665db4e9042fe0176a89aade16">link2</a> <br>
+                </html>'''
+        })
+        client.run_attack(webvulnscan.attacks.session_url)
+        client.log.assert_count(1)
+
+    #phpsessid in link
+    def test_site_with_get(self):
+        client = tutil.TestClient({
+            '/': u'''<html>
+               <a href="www.sample.org/index.html?
+               phpsessid=edb0e8665db4e9042fe0176a89aade16">link3</a> <br>
+               </html>'''
+        })
+        client.run_attack(webvulnscan.attacks.session_url)
+        client.log.assert_count(1)
