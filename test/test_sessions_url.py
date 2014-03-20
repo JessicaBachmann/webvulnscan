@@ -26,10 +26,10 @@ class SessionUrl(unittest.TestCase):
     #sid in link
     def test_site_with_post(self):
         client = tutil.TestClient({
-            '/': u'''<html>
-                <a href="www.sample.org/index.html?
-                sid=edb0e8665db4e9042fe0176a89aade16">link1</a>
-                </html>'''
+            '/': '<html>\
+                <a href="www.sample.org/index.html?\
+                sid=edb0e8665db4e9042fe0176a89aade16">link1</a>\
+                </html>'
         })
         client.run_attack(webvulnscan.attacks.session_url)
         client.log.assert_count(1)
@@ -37,10 +37,10 @@ class SessionUrl(unittest.TestCase):
     #sessionid in link
     def test_site_with_get(self):
         client = tutil.TestClient({
-            '/': u'''<html>
-                <a href="www.sample.org/index.html?
-                sessionid=edb0e8665db4e9042fe0176a89aade16">link2</a> <br>
-                </html>'''
+            '/': '<html>\
+                <a href="www.sample.org/index.html?\
+                sessionid=edb0e8665db4e9042fe0176a89aade16">link2</a>\
+                </html>'
         })
         client.run_attack(webvulnscan.attacks.session_url)
         client.log.assert_count(1)
@@ -48,10 +48,10 @@ class SessionUrl(unittest.TestCase):
     #phpsessid in link
     def test_site_with_get(self):
         client = tutil.TestClient({
-            '/': u'''<html>
-               <a href="www.sample.org/index.html?
-               phpsessid=edb0e8665db4e9042fe0176a89aade16">link3</a> <br>
-               </html>'''
+            '/': '<html>\
+               <a href="www.sample.org/index.html?\
+               phpsessid=edb0e8665db4e9042fe0176a89aade16">link3</a>\
+               </html>'
         })
         client.run_attack(webvulnscan.attacks.session_url)
         client.log.assert_count(1)
