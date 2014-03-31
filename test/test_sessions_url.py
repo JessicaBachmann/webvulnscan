@@ -1,4 +1,4 @@
-from __future__ import unicode_literals
+
 import unittest
 import sys
 
@@ -12,7 +12,7 @@ import webvulnscan.attacks.session_url
 def make_client(headers):
     headers['Content-Type'] = 'text/html; charset=utf-8'
     return tutil.TestClient({
-        '/': (200, b'<html></html>', headers),
+        '/': b'''(200, b'<html></html>', headers)''',
     })
 
 
@@ -26,10 +26,10 @@ class SessionUrl(unittest.TestCase):
     #sid in link
     def test_site_with_post(self):
         client = tutil.TestClient({
-            '/': '<html>\
-                <a href="www.sample.org/index.html?\
-                sid=edb0e8665db4e9042fe0176a89aade16">link1</a>\
-                </html>'
+            '/': u'''<html>
+            <a href="www.sample.org/index.html?
+            sid=edb0e8665db4e9042fe0176a89aade16">link1</a>
+            </html>'''
         })
         client.run_attack(webvulnscan.attacks.session_url)
         client.log.assert_count(1)
@@ -37,10 +37,10 @@ class SessionUrl(unittest.TestCase):
     #sessionid in link
     def test_site_with_get(self):
         client = tutil.TestClient({
-            '/': '<html>\
-                <a href="www.sample.org/index.html?\
-                sessionid=edb0e8665db4e9042fe0176a89aade16">link2</a>\
-                </html>'
+            '/': u'''<html>
+                <a href="www.sample.org/index.html?
+                sessionid=edb0e8665db4e9042fe0176a89aade16">link2</a>
+                </html>'''
         })
         client.run_attack(webvulnscan.attacks.session_url)
         client.log.assert_count(1)
@@ -48,10 +48,10 @@ class SessionUrl(unittest.TestCase):
     #phpsessid in link
     def test_site_with_get(self):
         client = tutil.TestClient({
-            '/': '<html>\
-               <a href="www.sample.org/index.html?\
-               phpsessid=edb0e8665db4e9042fe0176a89aade16">link3</a>\
-               </html>'
+            '/': u'''<html>
+               <a href="www.sample.org/index.html?
+               phpsessid=edb0e8665db4e9042fe0176a89aade16">link3</a>
+               </html>'''
         })
         client.run_attack(webvulnscan.attacks.session_url)
         client.log.assert_count(1)
